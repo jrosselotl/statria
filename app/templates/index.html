@@ -1,1 +1,167 @@
-<h1>Hola Statria! perrito</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electrical Test Panel</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
+
+<body>
+
+    <!-- ✅ HAMBURGER (solo móvil) -->
+    <header class="mobile-header">
+        <h1 class="mobile-title">Panel</h1>
+        <button class="hamburger" id="hamburger">&#9776;</button>
+    </header>
+
+    <!-- ✅ SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <h2>Panel</h2>
+        <button id="btnDashboard">📊 Dashboard</button>
+        <button id="btnMyTest">📂 My Test</button>
+        <button id="btnNewTest">➕ New Test</button>
+        <a href="/logout" class="logout-btn">Log out</a>
+    </div>
+
+    <!-- ✅ CONTENIDO PRINCIPAL -->
+    <div class="content">
+
+        <!-- ================= DASHBOARD ================= -->
+        <div id="section-dashboard" class="section">
+            <h2>Test Statistics</h2>
+            <div class="chart-container">
+                <canvas id="chart-test" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- ================= MY TEST ================= -->
+        <div id="section-mytest" class="section hidden">
+            <h2>My Tests</h2>
+            <table class="table-test">
+                <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Test Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="table-mytest"></tbody>
+            </table>
+        </div>
+
+        <!-- ================= NEW TEST ================= -->
+        <div id="section-newtest" class="section hidden">
+            <form id="form-test" enctype="multipart/form-data">
+                <!-- Step 1: Equipment Data -->
+                <fieldset>
+                    <legend>1. Equipment Data</legend>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="project_id">Project:</label>
+                            <select id="project_id" name="project_id" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location_1">Main Location:</label>
+                            <div class="field-group">
+                                <select id="location_1" name="location_1" required></select>
+                                <select id="number_location_1" name="number_location_1" style="display:none;"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="label-location_2" style="display:none;">
+                            <label for="location_2">Secondary Location:</label>
+                            <div class="field-group">
+                                <select id="location_2" name="location_2"></select>
+                                <select id="number_location_2" name="number_location_2"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="equipment_type">Equipment Type:</label>
+                            <div class="field-group">
+                                <select id="equipment_type" name="equipment_type" required></select>
+                                <select id="number_equipment_type" name="number_equipment_type"
+                                    style="display:none;"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="label-sub_equipment" style="display:none;">
+                            <label for="sub_equipment">Sub Equipment:</label>
+                            <div class="field-group">
+                                <select id="sub_equipment" name="sub_equipment"></select>
+                                <select id="number_sub_equipment" name="number_sub_equipment"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="terminal">Terminal:</label>
+                            <input type="text" id="terminal" name="terminal" placeholder="Terminal Nº" />
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Step 2: Test Type -->
+                <fieldset>
+                    <legend>2. Test Type</legend>
+                    <label for="test-type">Test Type:</label>
+                    <select id="test-type" name="test_type" required>
+                        <option value="">Select test...</option>
+                    </select>
+                </fieldset>
+
+                <!-- Step 3: Features -->
+                <fieldset id="block-features" style="display:none;">
+                    <legend>3. Features</legend>
+
+                    <label for="cable_set">Cable Set:</label>
+                    <input type="number" id="cable_set" name="cable_set" min="1" value="1" required />
+
+                    <label for="power_type">Power Type:</label>
+                    <select id="power_type" name="power_type" required>
+                        <option value="three_phase">Three-phase (L1, L2, L3, N, PE)</option>
+                        <option value="single_phase">Single-phase (L, N, PE)</option>
+                    </select>
+
+                    <label for="unit" id="label-unit">Unit:</label>
+                    <select id="unit" name="unit"></select>
+                </fieldset>
+
+                <!-- Step 4: Test Result -->
+                <fieldset id="result-block" style="display:none;">
+                    <legend>4. Test Result</legend>
+                    <div class="table-responsive" id="result-container"></div>
+                </fieldset>
+
+                <button type="submit" class="btn-save">Save</button>
+            </form>
+        </div>
+
+    </div> <!-- FIN CONTENT -->
+
+    <!-- ✅ SCRIPTS -->
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/load_form.js"></script>
+    <script src="/static/js/unit_by_test.js"></script>
+    <script src="/static/js/form_continuity.js"></script>
+    <script src="/static/js/form_insulation.js"></script>
+    <script src="/static/js/form_contact_resistance.js"></script>
+    <script src="/static/js/form_torque.js"></script>
+
+    <!-- ✅ JS para sidebar móvil -->
+    <script>
+        const hamburger = document.getElementById("hamburger");
+        const sidebar = document.getElementById("sidebar");
+        hamburger.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+        });
+    </script>
+
+</body>
