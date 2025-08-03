@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_302_FOUND
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from app.utils.logger import logger
+
 
 # Models
 from app.database import get_db
@@ -30,10 +32,14 @@ def process_login(
     user = db.query(User).filter_by(email=email).first()
 
     if not user or not pwd_context.verify(password, user.password_hash):
+        logger.warning(f"Login failed for email: {email}")
         return templates.TemplateResponse(
             "login.html",
             {"request": request, "error": "Invalid credentials"}
         )
+
+    logger.info(f"User {user.email} logged in successfully.")
+
 
     request.session["user_id"] = user.id
     request.session["user_role"] = user.role
