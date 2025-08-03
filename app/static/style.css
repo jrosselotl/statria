@@ -1,0 +1,360 @@
+/* ===========================
+   🎨 ESTILOS GENERALES
+=========================== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f6f9;
+  color: #333;
+  box-sizing: border-box;
+}
+
+h1, h2 {
+  color: #2c3e50;
+  margin-top: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===========================
+   📌 SIDEBAR (DESKTOP)
+=========================== */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 220px;
+  height: 100vh;
+  background-color: #004080;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.sidebar h2 {
+  color: white;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar button,
+.sidebar .logout-btn {
+  width: 85%;
+  margin: 0.4rem 0;
+  padding: 0.7rem;
+  border: none;
+  background: #0059b3;
+  color: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.sidebar button:hover,
+.sidebar .logout-btn:hover {
+  background: #003366;
+}
+
+.logout-btn {
+  text-decoration: none;
+}
+
+/* ===========================
+   📌 CONTENIDO PRINCIPAL
+=========================== */
+.content {
+  margin-left: 240px; /* espacio para el sidebar */
+  padding: 2rem;
+  max-width: 1100px;
+}
+
+.section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+/* ===========================
+   📊 TABLA PRINCIPAL (LISTADOS)
+=========================== */
+.table-test {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin: 1rem auto;
+  background: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-test th, .table-test td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.table-test th {
+  background-color: #e0eafc;
+  color: #333;
+}
+
+/* ✅ Botones generales */
+.btn {
+  display: inline-block;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.btn-continue {
+  background: #3498db;
+  color: white;
+}
+
+.btn-send {
+  background: #27ae60;
+  color: white;
+}
+
+.btn-continue:hover {
+  background: #2c80b4;
+}
+
+.btn-send:hover {
+  background: #1f8f4d;
+}
+
+/* ===========================
+   📝 FORMULARIO
+=========================== */
+form {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+}
+
+legend {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #004080;
+}
+
+label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.field-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.camera-label {
+  display: inline-block;
+  background-color: #0077cc;
+  color: white;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.camera-label:hover {
+  background-color: #005fa3;
+}
+
+/* ===========================
+   ✅ TABLA DE RESULTADOS (TESTS)
+=========================== */
+.test-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  table-layout: fixed;
+  font-size: 0.9rem;
+}
+
+.test-table th, .test-table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.test-table th {
+  background-color: #f7f7f7;
+  font-weight: 600;
+}
+
+.test-table input[type="text"],
+.test-table input[type="number"],
+.test-table select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.85rem;
+}
+
+.na-btn {
+  background: #ddd;
+  border: 1px solid #aaa;
+  padding: 3px 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-bottom: 3px;
+}
+
+.na-btn.active {
+  background: #007BFF;
+  color: #fff;
+}
+
+.camera-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.camera-label .attach-text {
+  font-size: 0.75rem;
+  color: #007BFF;
+}
+
+/* ===========================
+   📱 RESPONSIVE: SIDEBAR Y FORMULARIO
+=========================== */
+.hamburger {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .content {
+    margin-left: 0;
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -220px;
+    width: 220px;
+    z-index: 1200;
+    height: 100vh;
+    transition: left 0.3s ease-in-out;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .hamburger {
+    display: block;
+    position: fixed;
+    top: 15px;
+    right: 15px; /* ✅ ahora a la derecha */
+    background: #004080;
+    color: white;
+    border: none;
+    padding: 0.6rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1300;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 0.9rem;
+  }
+
+  .content, form, .section {
+    max-width: 100%;
+    margin: 0;
+    padding: 1rem;
+  }
+
+  fieldset {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
+  /* ✅ Tabla como cards */
+  .test-table,
+  .test-table thead,
+  .test-table tbody,
+  .test-table th,
+  .test-table td,
+  .test-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .test-table thead {
+    display: none;
+  }
+
+  .test-table tr {
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    padding: 8px;
+  }
+
+  .test-table td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 4px;
+    text-align: left;
+  }
+
+  .test-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #555;
+    flex: 1;
+  }
+}
