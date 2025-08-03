@@ -1,0 +1,20 @@
+[0;1;32m●[0m statriabackend.service - Statria FastAPI backend
+     Loaded: loaded (/etc/systemd/system/statriabackend.service; enabled; vendor preset: enabled)
+     Active: [0;1;32mactive (running)[0m since Sat 2025-08-02 09:42:36 UTC; 4h 23min ago
+   Main PID: 185787 (uvicorn)
+      Tasks: 1 (limit: 4532)
+     Memory: 29.2M
+        CPU: 32.417s
+     CGroup: /system.slice/statriabackend.service
+             └─185787 /var/www/statria/venv/bin/python3 /var/www/statria/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+Aug 02 13:55:15 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /shop/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 13:55:15 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /wp1/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 13:55:16 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /test/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 13:55:16 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /media/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 13:55:16 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /wp2/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 13:55:16 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /site/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 13:55:16 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /cms/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 13:55:17 statria-server uvicorn[185787]: INFO:     128.199.156.176:0 - "GET /sito/wp-includes/wlwmanifest.xml HTTP/1.0" 404 Not Found
+Aug 02 14:05:11 statria-server uvicorn[185787]: INFO:     89.26.171.124:60503 - "GET / HTTP/1.1" 200 OK
+Aug 02 14:05:13 statria-server uvicorn[185787]: INFO:     89.26.171.124:0 - "GET / HTTP/1.0" 200 OK
