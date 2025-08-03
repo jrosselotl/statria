@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
+from app.routes import log
 import os
 
 # Base de datos
@@ -57,3 +58,4 @@ async def read_admin(request: Request, db: Session = Depends(get_db)):
 
 # Incluir rutas
 app.include_router(auth.router)
+app.include_router(log.router)
