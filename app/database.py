@@ -8,7 +8,7 @@ import os
 load_dotenv()
 
 # ✅ Tu nueva URL de conexión local en el VPS
-DATABASE_URL = "postgresql+psycopg2://statria_user:hMBVHZu6kYFAirm17hJh8E3RebuMaQW2@95.217.235.104:5432/statria_db"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Crear el engine
 engine = create_engine(
