@@ -5,8 +5,7 @@ from starlette.status import HTTP_302_FOUND
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from app.utils.logger import logger
-
-
+import os
 # Models
 from app.database import get_db
 from app.models.user import User
@@ -18,7 +17,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Login page
 @router.get("/login", response_class=HTMLResponse)
 def show_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    print("Files in auth/", os.listdir("app/templates/auth"))
+    return templates.TemplateResponse("auth/login.html", {"request": request})
 
 # Process login
 @router.post("/auth/login")
@@ -34,22 +34,30 @@ def process_login(
     if not user or not pwd_context.verify(password, user.password_hash):
         logger.warning(f"Login failed for email: {email}")
         return templates.TemplateResponse(
-            "login.html",
-            {"request": request, "error": "Invalid credentials"}
+            "auth/login.html",
+            {"request": request, "error": "Credenciales incorrectas"}
         )
 
     logger.info(f"User {user.email} logged in successfully.")
 
-
+    # Guardar sesión
     request.session["user_id"] = user.id
     request.session["user_role"] = user.role
     if remember:
         request.session["remember"] = True
 
+    # Redirección por rol
     if user.role == "project":
         return RedirectResponse(url="/admin", status_code=HTTP_302_FOUND)
+    elif user.role == "technician":
+        return RedirectResponse(url="/dashboard", status_code=HTTP_302_FOUND)
+    elif user.role == "freelancer":
+        return RedirectResponse(url="/freelancer", status_code=HTTP_302_FOUND)
     else:
-        return RedirectResponse(url="/", status_code=HTTP_302_FOUND)
+        return templates.TemplateResponse(
+            "auth/login.html",
+            {"request": request, "error": "Rol no reconocido"}
+        )
 
 # Logout
 @router.get("/logout")

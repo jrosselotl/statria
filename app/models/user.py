@@ -24,4 +24,4 @@ class User(Base):
 
     # Relaciones
     user_project = relationship("UserProject", back_populates="user", cascade="all, delete-orphan")
-    test_performed = relationship("TestPerformed", back_populates="user", cascade="all, delete-orphan")
+    project = relationship("UserProject", back_populates="user")
