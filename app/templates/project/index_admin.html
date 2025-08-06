@@ -1,121 +1,136 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Administración</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/style.css"/>
 </head>
 <body>
-  <div style="background:#333; color:white; padding:10px; display:flex; justify-content:space-between;">
-    <h1>Panel de Administración - Parámetros Técnicos</h1>
-    <a href="/logout" style="background:red; color:white; padding:5px 10px; border-radius:5px; text-decoration:none;">Cerrar sesión</a>
+  <div class="main-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2 class="sidebar-title">Admin Panel</h2>
+      <nav class="sidebar-nav">
+        <button class="sidebar-btn" id="btnParametros">📐 Parámetros Técnicos</button>
+        <button class="sidebar-btn" id="btnCertificados">📑 Certificados Calibración</button>
+        <a href="/logout" class="sidebar-logout">🔒 Cerrar sesión</a>
+      </nav>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="content">
+      <!-- PARÁMETROS -->
+      <section id="section-parametros">
+        <h1>Parámetros Técnicos</h1>
+        <form id="form-parametros" class="form-grid">
+          <select id="proyecto_id" name="proyecto_id" required></select>
+          <select id="tipo_test" name="tipo_test" required></select>
+
+          <div>
+            <label>Ubicación 1</label>
+            <select id="ubicacion_1" name="ubicacion_1" required>
+              <option value="">Seleccione</option>
+              <option value="COLO">COLO</option>
+              <option value="WTP">WTP</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+            <input type="number" id="numero_ubicacion_1" name="numero_ubicacion_1" placeholder="Nº" required />
+          </div>
+
+          <div id="label-ubicacion_2" class="hidden">
+            <label>Ubicación 2</label>
+            <select id="ubicacion_2" name="ubicacion_2">
+              <option value="">Seleccione</option>
+              <option value="CE">CE</option>
+            </select>
+            <input type="number" id="numero_ubicacion_2" name="numero_ubicacion_2" placeholder="Nº" />
+          </div>
+
+          <div>
+            <label>Tipo de equipo</label>
+            <select id="tipo_equipo" name="tipo_equipo" required>
+              <option value="">Seleccione</option>
+              <option value="MSB">MSB</option>
+              <option value="PDU">PDU</option>
+              <option value="LBP">LBP</option>
+              <option value="ADP">ADP</option>
+              <option value="PNL">PNL</option>
+              <option value="NLP">NLP</option>
+              <option value="ATS">ATS</option>
+            </select>
+            <input type="number" id="numero_tipo_equipo" name="numero_tipo_equipo" placeholder="Nº" required />
+          </div>
+
+          <div id="label-sub_equipo" class="hidden">
+            <label>Sub-equipo</label>
+            <select id="sub_equipo" name="sub_equipo">
+              <option value="">Seleccione</option>
+              <option value="BSW">BSW</option>
+              <option value="FCB">FCB</option>
+            </select>
+            <input type="number" id="numero_sub_equipo" name="numero_sub_equipo" placeholder="Nº" />
+          </div>
+
+          <input type="text" id="referencia" name="referencia" placeholder="Referencia" required />
+          <select id="logica" name="logica" required>
+            <option value="">Lógica</option>
+            <option value=">">Mayor que</option>
+            <option value="<">Menor que</option>
+            <option value=">=">Mayor o igual</option>
+            <option value="<=">Menor o igual</option>
+            <option value="=">Igual</option>
+          </select>
+          <select id="unidad" name="unidad" required></select>
+
+          <input type="hidden" id="parametro_id" value="" />
+          <button type="submit" class="btn-guardar">💾 Guardar</button>
+        </form>
+
+        <table class="tabla" id="tabla-parametros">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Proyecto</th>
+              <th>Test</th>
+              <th>Ubicación</th>
+              <th>Equipo</th>
+              <th>Subequipo</th>
+              <th>Referencia</th>
+              <th>Lógica</th>
+              <th>Unidad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- CERTIFICADOS -->
+      <section id="section-certificados" class="hidden">
+        <h1>Certificados de Calibración</h1>
+        <form id="form-certificados" enctype="multipart/form-data" class="form-grid">
+          <input type="text" id="nombre_certificado" name="nombre_certificado" placeholder="Nombre del certificado" required />
+          <input type="text" id="modelo_equipo" name="modelo_equipo" placeholder="Modelo del equipo" required />
+          <input type="file" id="archivo_certificado" name="archivo_certificado" accept="application/pdf" required />
+          <button type="submit" class="btn-guardar">📥 Subir Certificado</button>
+        </form>
+
+        <table class="tabla" id="tabla-certificados">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Modelo</th>
+              <th>Archivo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
   </div>
-
-  <!-- Crear o editar parámetros -->
-  <section style="margin:20px;">
-    <h2>Crear / Editar Parámetros</h2>
-    <form id="form-parametros">
-      <label>Proyecto:
-        <select id="proyecto_id" name="proyecto_id" required></select>
-      </label>
-
-      <label>Tipo de prueba:
-        <select id="tipo_test" name="tipo_test" required>
-          <option value="">Seleccione...</option>
-        </select>
-      </label>
-
-      <label>Ubicación 1:
-        <select id="ubicacion_1" name="ubicacion_1" required>
-          <option value="">Seleccione</option>
-          <option value="COLO">COLO</option>
-          <option value="WTP">WTP</option>
-          <option value="ADMIN">ADMIN</option>
-        </select>
-        <input type="number" id="numero_ubicacion_1" name="numero_ubicacion_1" placeholder="Nº" required />
-      </label>
-
-      <div id="label-ubicacion_2" style="display:none;">
-        <label>Ubicación 2:
-          <select id="ubicacion_2" name="ubicacion_2">
-            <option value="">Seleccione</option>
-            <option value="CE">CE</option>
-          </select>
-          <input type="number" id="numero_ubicacion_2" name="numero_ubicacion_2" placeholder="Nº" />
-        </label>
-      </div>
-
-      <label>Tipo de equipo:
-        <select id="tipo_equipo" name="tipo_equipo" required>
-          <option value="">Seleccione</option>
-          <option value="MSB">MSB</option>
-          <option value="PDU">PDU</option>
-          <option value="LBP">LBP</option>
-          <option value="ADP">ADP</option>
-          <option value="PNL">PNL</option>
-          <option value="NLP">NLP</option>
-          <option value="ATS">ATS</option>
-        </select>
-        <input type="number" id="numero_tipo_equipo" name="numero_tipo_equipo" placeholder="Nº" required />
-      </label>
-
-      <div id="label-sub_equipo" style="display:none;">
-        <label>Sub-equipo:
-          <select id="sub_equipo" name="sub_equipo">
-            <option value="">Seleccione</option>
-            <option value="BSW">BSW</option>
-            <option value="FCB">FCB</option>
-          </select>
-          <input type="number" id="numero_sub_equipo" name="numero_sub_equipo" placeholder="Nº" />
-        </label>
-      </div>
-
-      <label>Referencia:
-        <input type="text" id="referencia" name="referencia" placeholder="Ej: 0.5" required />
-      </label>
-
-      <label>Lógica:
-        <select id="logica" name="logica" required>
-          <option value="">Seleccione...</option>
-          <option value=">">Mayor que</option>
-          <option value="<">Menor que</option>
-          <option value=">=">Mayor o igual</option>
-          <option value="<=">Menor o igual</option>
-          <option value="=">Igual</option>
-        </select>
-      </label>
-
-      <label>Unidad:
-        <select id="unidad" name="unidad" required></select>
-      </label>
-
-      <input type="hidden" id="parametro_id" value="" />
-      <button type="submit">Guardar</button>
-    </form>
-  </section>
-
-  <!-- Listado de parámetros -->
-  <section style="margin:20px;">
-    <h2>Listado de Parámetros</h2>
-    <table border="1" cellpadding="5" style="width:100%; border-collapse:collapse;">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Proyecto</th>
-          <th>Tipo Test</th>
-          <th>Ubicación</th>
-          <th>Equipo</th>
-          <th>Sub-equipo</th>
-          <th>Referencia</th>
-          <th>Lógica</th>
-          <th>Unidad</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-parametros"></tbody>
-    </table>
-  </section>
 
   <script src="/static/js/unidades_por_test.js"></script>
   <script src="/static/js/admin_panel.js"></script>

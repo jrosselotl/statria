@@ -10,7 +10,7 @@ class UserRole(str, enum.Enum):
     project = "project"
 
 class User(Base):
-    __tablename__ = "user_account"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, nullable=False)
