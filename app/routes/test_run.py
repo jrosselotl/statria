@@ -10,10 +10,10 @@ from app.models.test_type import TestType
 from app.models.test_project import TestProject
 
 # ✅ Result models
-from app.models.result_continuity import ResultContinuity
-from app.models.result_insulation import ResultInsulation
-from app.models.result_contact_resistance import ResultContactResistance
-from app.models.result_torque import ResultTorque
+from app.models.test_result_continuity import TestResultContinuity
+from app.models.test_result_insulation import TestResultInsulation
+from app.models.test_result_contact_resistance import TestResultContactResistance
+from app.models.test_result_torque import TestResultTorque
 
 router = APIRouter(prefix="/test_run", tags=["Test Run"])
 UPLOAD_DIR = "static/uploads"
@@ -80,13 +80,13 @@ async def create_test_run(request: Request, db: Session = Depends(get_db)):
             }
 
             if test_type == "continuity":
-                db.add(ResultContinuity(**common_data, result_value=r.get("result_value")))
+                db.add(TestResultContinuity(**common_data, result_value=r.get("result_value")))
             elif test_type == "insulation":
-                db.add(ResultInsulation(**common_data, result_value=r.get("result_value"), time_applied=r.get("time_applied")))
+                db.add(TestResultInsulation(**common_data, result_value=r.get("result_value"), time_applied=r.get("time_applied")))
             elif test_type == "contact_resistance":
-                db.add(ResultContactResistance(**common_data, result_value=r.get("result_value")))
+                db.add(TestResultContactResistance(**common_data, result_value=r.get("result_value")))
             elif test_type == "torque":
-                db.add(ResultTorque(**common_data, nominal_value=r.get("nominal_value"), verification_value=r.get("verification_value")))
+                db.add(TestResultTorque(**common_data, nominal_value=r.get("nominal_value"), verification_value=r.get("verification_value")))
 
         db.commit()
         return {"message": f"✅ TestRun creado con ID {new_test.id}"}
@@ -147,7 +147,7 @@ def list_user_stats(user_id: int, project_id: int, db: Session = Depends(get_db)
         total = (
             db.query(TestRun)
             .filter(
-                TestRun.test_type_id == test_type.id,
+                TestRun.test_type_id == test.id,
                 TestRun.project_id == project_id,
                 TestRun.user_id == user_id
             )

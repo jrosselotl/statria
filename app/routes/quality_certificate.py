@@ -1,18 +1,30 @@
-from pydantic import BaseModel
-from datetime import datetime
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import List
+from app.database import get_db
+from app.models.quality_certificate import QualityCertificate
+from app.schemas.quality_certificate import QualityCertificateCreate, QualityCertificateOut
 
-class QualityCertificateBase(BaseModel):
-    name: str
-    pdf_url: str
-    uploaded_by: Optional[int] = None
+router = APIRouter(prefix="/quality_certificate", tags=["Quality quality_certificate"])
 
-class QualityCertificateCreate(QualityCertificateBase):
-    pass
+@router.get("/list", response_model=List[QualityCertificateOut])
+def list_certificates(db: Session = Depends(get_db)):
+    return db.query(QualityCertificate).all()
 
-class QualityCertificateOut(QualityCertificateBase):
-    id: int
-    uploaded_at: datetime
+@router.post("/", response_model=QualityCertificateOut)
+def create_certificate(data: QualityCertificateCreate, db: Session = Depends(get_db)):
+    quality_certificate = QualityCertificate(**data.dict())
+    db.add(quality_certificate)
+    db.commit()
+    db.refresh(quality_certificate)
+    return quality_certificate
 
-    class Config:
-        orm_mode = True
+@router.delete("/{certificate_id}")
+def delete_certificate(certificate_id: int, db: Session = Depends(get_db)):
+    quality_certificate = db.query(QualityCertificate).filter_by(id=certificate_id).first()
+    if not quality_certificate:
+        raise HTTPException(status_code=404, detail="quality_certificate not found")
+    
+    db.delete(quality_certificate)
+    db.commit()
+    return {"message": "quality_certificate deleted successfully"}

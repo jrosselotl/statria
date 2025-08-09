@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.test_run import TestRun
 from app.models.project import Project
-from app.models.result_continuity import ResultContinuity
-from app.models.result_insulation import ResultInsulation
-from app.models.result_contact_resistance import ResultContactResistance
-from app.models.result_torque import ResultTorque
+from app.models.test_result_continuity import TestResultContinuity
+from app.models.test_result_insulation import TestResultInsulation
+from app.models.test_result_contact_resistance import TestResultContactResistance
+from app.models.test_result_torque import TestResultTorque
 from app.utils.pdf_generator import generate_test_pdf
 from app.utils.email import send_email_with_pdf, get_admin_emails
 import os
@@ -26,10 +26,10 @@ async def send_pdf(test_id: int, db: Session = Depends(get_db)):
 
     test_type = test_run.test_type.name
     MODEL_MAP = {
-        "continuity": ResultContinuity,
-        "insulation": ResultInsulation,
-        "contact_resistance": ResultContactResistance,
-        "torque": ResultTorque
+        "continuity": TestResultContinuity,
+        "insulation": TestResultInsulation,
+        "contact_resistance": TestResultContactResistance,
+        "torque": TestResultTorque
     }
     ResultModel = MODEL_MAP.get(test_type)
     if not ResultModel:

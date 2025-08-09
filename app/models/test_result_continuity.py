@@ -18,4 +18,4 @@ class TestResultContinuity(Base):
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
     # Relaciones
-    test_run = relationship("TestRun", back_populates="continuity_results")
+    test_run = relationship("TestRun", back_populates="test_result_continuity")

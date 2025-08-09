@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models.certificate_assignment import CertificateAssignment
 from app.schemas.certificate_assignment import CertificateAssignmentCreate, CertificateAssignmentOut
 
-router = APIRouter(prefix="/certificate-assignment", tags=["Certificate Assignment"])
+router = APIRouter(prefix="/quality_certificate-assignment", tags=["quality_certificate Assignment"])
 
 @router.get("/list", response_model=List[CertificateAssignmentOut])
 def list_assignments(db: Session = Depends(get_db)):

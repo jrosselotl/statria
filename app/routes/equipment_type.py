@@ -8,7 +8,7 @@ router = APIRouter(prefix="/equipment_type", tags=["Equipment Type"])
 
 @router.get("/list")
 def list_equipment_type(db: Session = Depends(get_db)):
-    equipment_types = db.query(EquipmentType).all()
+    equipment_type = db.query(EquipmentType).all()
     return [
         {
             "equipment_type": t.equipment_type,
@@ -16,5 +16,5 @@ def list_equipment_type(db: Session = Depends(get_db)):
             "sub_equipment": t.sub_equipment or "",
             "number_sub_equipment": t.number_sub_equipment or []
         }
-        for t in equipment_types
+        for t in equipment_type
     ]

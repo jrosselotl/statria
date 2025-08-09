@@ -6,12 +6,12 @@ from app.models.project import Project
 from app.models.test_type import TestType
 from app.models.equipment import Equipment
 from app.models.test_run import TestRun
-from app.models.result_continuity import ResultContinuity
-from app.models.result_insulation import ResultInsulation
-from app.models.result_contact_resistance import ResultContactResistance
-from app.models.result_torque import ResultTorque
+from app.models.test_result_continuity import TestResultContinuity
+from app.models.test_result_insulation import TestResultInsulation
+from app.models.test_result_contact_resistance import TestResultContactResistance
+from app.models.test_result_torque import TestResultTorque
 from app.routes.auth import get_current_user
-from app.models.user_account import UserAccount
+from app.models.user import User
 import os
 import shutil
 from datetime import datetime
@@ -33,7 +33,12 @@ async def save_form(
     number_equipment_type: Optional[int] = Form(None),
     sub_equipment: Optional[str] = Form(None),
     number_sub_equipment: Optional[int] = Form(None),
+
+    # 👇 llega en snake_case desde el select (lo seguimos aceptando)
     test_type: str = Form(...),
+    # 👇 NUEVO: ID real del test (lo preferimos)
+    test_type_id: Optional[int] = Form(None),
+
     cable_set: int = Form(...),
     power_type: str = Form(...),
     terminal: Optional[str] = Form(None),
@@ -42,25 +47,30 @@ async def save_form(
     images: Optional[list[UploadFile]] = File(None),
     completed: bool = Form(False),
     db: Session = Depends(get_db),
-    current_user: UserAccount = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="User not authenticated")
 
     user_id = current_user.id
 
+    # Normaliza None
     location_2 = location_2 or None
     number_location_2 = number_location_2 or None
     sub_equipment = sub_equipment or None
     number_sub_equipment = number_sub_equipment or None
 
-    equipment_code_parts = [f"{location_1}{number_location_1}"]
+    # ---- Equipment code
+    parts = [f"{location_1}{number_location_1}"]
     if location_2 and number_location_2:
-        equipment_code_parts.append(f"{location_2}{number_location_2}")
-    equipment_code_parts.append(f"{equipment_type}{number_equipment_type}")
+        parts.append(f"{location_2}{number_location_2}")
+    if number_equipment_type is not None:
+        parts.append(f"{equipment_type}{number_equipment_type}")
+    else:
+        parts.append(f"{equipment_type}")
     if sub_equipment and number_sub_equipment:
-        equipment_code_parts.append(f"{sub_equipment}{number_sub_equipment}")
-    equipment_code = "-".join(equipment_code_parts).upper()
+        parts.append(f"{sub_equipment}{number_sub_equipment}")
+    equipment_code = "-".join(parts).upper()
 
     equipment = db.query(Equipment).filter(Equipment.code == equipment_code).first()
     if not equipment:
@@ -83,12 +93,30 @@ async def save_form(
         db.commit()
         db.refresh(equipment)
 
-    test_type_obj = db.query(TestType).filter(TestType.name == test_type).first()
+    # ---- Resolver TestType
+    from sqlalchemy import func
+    test_type_obj = None
+    if test_type_id:
+        test_type_obj = db.query(TestType).filter(TestType.id == test_type_id).first()
+    if not test_type_obj:
+        # fallback: del snake_case a nombre "Contact Resistance"
+        human = test_type.replace("_", " ").strip()
+        test_type_obj = (
+            db.query(TestType)
+              .filter(func.lower(TestType.name) == func.lower(human))
+              .first()
+        )
+
     if not test_type_obj:
         raise HTTPException(status_code=400, detail=f"Test type '{test_type}' not found")
 
-    test_run = db.query(TestRun).filter(TestRun.equipment_id == equipment.id, TestRun.test_type_id == test_type_obj.id).first()
-
+    # ---- TestRun
+    test_run = (
+        db.query(TestRun)
+          .filter(TestRun.equipment_id == equipment.id,
+                  TestRun.test_type_id == test_type_obj.id)
+          .first()
+    )
     if not test_run:
         test_run = TestRun(
             project_id=project_id,
@@ -101,6 +129,7 @@ async def save_form(
         db.commit()
         db.refresh(test_run)
 
+    # ---- Parse data
     try:
         data_parsed = json.loads(data)
     except json.JSONDecodeError:
@@ -113,11 +142,12 @@ async def save_form(
     )
     test_run.status = "completed" if completed and all_filled else "incomplete"
 
+    # ---- Persist results
     MODEL_MAP = {
-        "continuity": ResultContinuity,
-        "insulation": ResultInsulation,
-        "contact_resistance": ResultContactResistance,
-        "torque": ResultTorque
+        "continuity": TestResultContinuity,
+        "insulation": TestResultInsulation,
+        "contact_resistance": TestResultContactResistance,
+        "torque": TestResultTorque
     }
     ResultModel = MODEL_MAP.get(test_type)
     if not ResultModel:
@@ -171,10 +201,10 @@ async def load_test(test_id: int, db: Session = Depends(get_db)):
 
     test_type = test_run.test_type.name
     MODEL_MAP = {
-        "continuity": ResultContinuity,
-        "insulation": ResultInsulation,
-        "contact_resistance": ResultContactResistance,
-        "torque": ResultTorque
+        "continuity": TestResultContinuity,
+        "insulation": TestResultInsulation,
+        "contact_resistance": TestResultContactResistance,
+        "torque": TestResultTorque
     }
     ResultModel = MODEL_MAP.get(test_type)
     if not ResultModel:

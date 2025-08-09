@@ -13,3 +13,4 @@ class QualityCertificate(Base):
     uploaded_by = Column(Integer, nullable=True)
 
     assignments = relationship("CertificateAssignment", back_populates="quality_certificate")
+    test_run = relationship("TestRun", back_populates="quality_certificate")

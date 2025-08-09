@@ -2,8 +2,8 @@ from sqlalchemy import Column, Integer, String, Boolean, Numeric, Text, ForeignK
 from sqlalchemy.orm import relationship
 from app.database import Base
 
-class TestResult(Base):
-    __tablename__ = "test_result"
+class TestResultMapping(Base):
+    __tablename__ = "test_result_mapping"
 
     id = Column(Integer, primary_key=True, index=True)
     test_run_id = Column(Integer, ForeignKey("test_run.id"), nullable=False)
@@ -20,4 +20,4 @@ class TestResult(Base):
     photo_url = Column(Text, nullable=True)
 
     # Relaciones
-    test_run = relationship("TestRun", back_populates="test_results")
+    test_run = relationship("TestRun", back_populates="test_result_mapping")

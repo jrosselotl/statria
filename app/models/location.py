@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, JSON
+from sqlalchemy.orm import relationship
 from app.database import Base
+
 
 
 class Location(Base):
@@ -12,3 +14,5 @@ class Location(Base):
     number_location_1 = Column(JSON, nullable=True)  # Example: [1,2,3]
     location_2 = Column(String(50), nullable=True)
     number_location_2 = Column(JSON, nullable=True)  # Example: [1,2,3]
+
+    project = relationship("Project", back_populates="location", lazy="joined")

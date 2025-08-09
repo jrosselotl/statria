@@ -11,4 +11,7 @@ class TestType(Base):
     description = Column(Text, nullable=True)
 
 
-    specialty = relationship("Specialty", back_populates="test_types")
+    specialty = relationship("Specialty", back_populates="test_type")
+    test_project = relationship("TestProject", back_populates="test_type", cascade="all, delete-orphan")
+    test_run = relationship("TestRun", back_populates="test_type")
+    assignments = relationship("CertificateAssignment", back_populates="test_type")

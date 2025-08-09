@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ------- DOM refs -------
+  const projectSelect = document.getElementById("project_id");
+
   const location1Select = document.getElementById("location_1");
   const numberLocation1Select = document.getElementById("number_location_1");
   const location2Container = document.getElementById("label-location_2");
@@ -11,10 +14,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const subEquipmentSelect = document.getElementById("sub_equipment");
   const numberSubEquipmentSelect = document.getElementById("number_sub_equipment");
 
+  const specialtySelect = document.getElementById("specialty");
   const testTypeSelect = document.getElementById("test-type");
+
   const featureBlock = document.getElementById("block-features");
   const resultBlock = document.getElementById("result-block");
   const powerTypeSelect = document.getElementById("power_type");
+
+  // hidden para enviar el ID real del test al backend
+  let hiddenTestTypeId = document.getElementById("test_type_id");
+  if (!hiddenTestTypeId) {
+    hiddenTestTypeId = document.createElement("input");
+    hiddenTestTypeId.type = "hidden";
+    hiddenTestTypeId.id = "test_type_id";
+    hiddenTestTypeId.name = "test_type_id";
+    document.getElementById("form-test").appendChild(hiddenTestTypeId);
+  }
+
+  // ------- helpers -------
+  const toSnake = (s) => (s || "").toLowerCase().replace(/\s+/g, "_");
 
   function toggleSelectVisibility(select, show) {
     if (show) {
@@ -28,39 +46,38 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resetInitialState() {
+    // locations
     toggleSelectVisibility(numberLocation1Select, false);
     location2Container.style.display = "none";
     toggleSelectVisibility(numberLocation2Select, false);
+
+    // equipment
     toggleSelectVisibility(numberEquipmentTypeSelect, false);
     subEquipmentContainer.style.display = "none";
     toggleSelectVisibility(numberSubEquipmentSelect, false);
+
+    // specialty/test
+    if (specialtySelect) {
+      specialtySelect.innerHTML = "<option value=''>Select specialty...</option>";
+      specialtySelect.disabled = true;
+    }
+    testTypeSelect.innerHTML = "<option value=''>Select test...</option>";
+    testTypeSelect.disabled = true;
+    hiddenTestTypeId.value = "";
   }
 
-  async function loadProjectAndTestType() {
+  // ------- LOAD: Projects -------
+  async function loadProjects() {
     try {
-      const [projectRes, testRes] = await Promise.all([
-        fetch("/project/list"),
-        fetch("/test/list")
-      ]);
+      const res = await fetch("/project/");
+      const projects = await res.json();
 
-      const projectData = await projectRes.json();
-      const testData = await testRes.json();
-
-      const projectSelect = document.getElementById("project_id");
-      projectSelect.innerHTML = "<option value=''>Select...</option>";
-      projectData.forEach((p) => {
+      projectSelect.innerHTML = "<option value=''>Select project...</option>";
+      projects.forEach(p => {
         const opt = document.createElement("option");
         opt.value = p.id;
         opt.textContent = p.name;
         projectSelect.appendChild(opt);
-      });
-
-      testTypeSelect.innerHTML = "<option value=''>Select test...</option>";
-      testData.forEach((t) => {
-        const opt = document.createElement("option");
-        opt.value = t.test_type;
-        opt.textContent = t.test_type.charAt(0).toUpperCase() + t.test_type.slice(1);
-        testTypeSelect.appendChild(opt);
       });
 
       projectSelect.onchange = () => {
@@ -68,13 +85,73 @@ document.addEventListener("DOMContentLoaded", () => {
         if (projectSelect.value) {
           loadLocation(projectSelect.value);
           loadEquipment();
+          loadSpecialtiesByProject(projectSelect.value); // specialties filtradas por proyecto
         }
       };
-    } catch (error) {
-      console.error("❌ Error loading project or test type:", error);
+
+      // si ya viene con valor (modo edición)
+      if (projectSelect.value) projectSelect.dispatchEvent(new Event("change"));
+    } catch (err) {
+      console.error("❌ Error loading projects:", err);
     }
   }
 
+  // ------- LOAD: Specialties by project -------
+  async function loadSpecialtiesByProject(projectId) {
+    try {
+      const res = await fetch(`/specialty/by_project/${projectId}`);
+      const specialties = await res.json();
+
+      specialtySelect.innerHTML = "<option value=''>Select specialty...</option>";
+      specialties.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.id;           // ID real
+        opt.textContent = s.name;
+        specialtySelect.appendChild(opt);
+      });
+
+      specialtySelect.disabled = specialties.length === 0;
+
+      specialtySelect.onchange = () => {
+        testTypeSelect.innerHTML = "<option value=''>Select test...</option>";
+        testTypeSelect.disabled = true;
+        hiddenTestTypeId.value = "";
+
+        const specId = parseInt(specialtySelect.value || "0", 10);
+        if (specId > 0) {
+          loadTestTypesByProjectAndSpecialty(projectId, specId);
+        }
+      };
+    } catch (e) {
+      console.error("❌ Error loading specialties by project:", e);
+      specialtySelect.innerHTML = "<option value=''>Select specialty...</option>";
+      specialtySelect.disabled = true;
+    }
+  }
+
+  // ------- LOAD: Test types by project + specialty -------
+  async function loadTestTypesByProjectAndSpecialty(projectId, specialtyId) {
+    try {
+      const url = `/test_type/by_project?project_id=${projectId}&specialty_id=${specialtyId}`;
+      const testTypes = await (await fetch(url)).json(); // [{id,name,specialty_id}]
+
+      testTypeSelect.innerHTML = "<option value=''>Select test...</option>";
+      testTypes.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = toSnake(t.name);  // lo usa el JS del formulario (initForm*)
+        opt.textContent = t.name;     // etiqueta visible
+        opt.dataset.id = t.id;        // ID real para guardar
+        testTypeSelect.appendChild(opt);
+      });
+      testTypeSelect.disabled = testTypes.length === 0;
+    } catch (err) {
+      console.error("❌ Error loading test types:", err);
+      testTypeSelect.innerHTML = "<option value=''>Select test...</option>";
+      testTypeSelect.disabled = true;
+    }
+  }
+
+  // ------- LOAD: Locations -------
   async function loadLocation(projectId) {
     try {
       const res = await fetch(`/location/list?project_id=${projectId}`);
@@ -137,6 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ------- LOAD: Equipment types -------
   async function loadEquipment() {
     try {
       const res = await fetch(`/equipment_type/list`);
@@ -198,9 +276,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ✅ Cambio de tipo de test
+  // ------- Change Test Type -> init forms -------
   testTypeSelect.onchange = () => {
-    const type = testTypeSelect.value;
+    const type = testTypeSelect.value; // "continuity" | "insulation" | "contact_resistance" | "torque"
+    const opt = testTypeSelect.selectedOptions[0];
+    hiddenTestTypeId.value = opt ? (opt.dataset.id || "") : "";
+
     featureBlock.style.display = type ? "block" : "none";
     resultBlock.style.display = "none";
 
@@ -220,10 +301,12 @@ document.addEventListener("DOMContentLoaded", () => {
     testTypeSelect.dispatchEvent(new Event("change"));
   };
 
+  // init
   resetInitialState();
-  loadProjectAndTestType();
+  loadProjects();
 });
 
+// -------- mobile labels --------
 function applyResponsiveLabels() {
   if (window.innerWidth > 768) return;
   document.querySelectorAll(".test-table").forEach(table => {

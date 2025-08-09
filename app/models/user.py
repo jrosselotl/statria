@@ -25,3 +25,4 @@ class User(Base):
     # Relaciones
     user_project = relationship("UserProject", back_populates="user", cascade="all, delete-orphan")
     project = relationship("UserProject", back_populates="user")
+    test_run = relationship("TestRun", back_populates="user")

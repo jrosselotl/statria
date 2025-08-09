@@ -15,4 +15,4 @@ class EquipmentType(Base):
     number_sub_equipment = Column(Integer, nullable=True)
 
     # Relaciones
-    project = relationship("Project", back_populates="equipment_types", lazy="joined")
+    project = relationship("Project", back_populates="equipment_type", lazy="joined")
